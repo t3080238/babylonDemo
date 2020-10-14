@@ -1,4 +1,5 @@
 import * as BABYLON from 'babylonjs'
+import * as Ammo from 'ammo.js';
 import Playground from '../components/playground'
 
 export default class GameCore {
@@ -20,8 +21,6 @@ export default class GameCore {
 
         this.setPhysicsEnv();
 
-        this.doRender();
-
         this.game = {
             scene: this.scene,
             camera: this.camera
@@ -29,6 +28,7 @@ export default class GameCore {
 
         this.game.playground = new Playground(this.game)
 
+        this.doRender();
         this.scene.registerBeforeRender(() => {
             this.update();
         })
@@ -42,7 +42,7 @@ export default class GameCore {
 
         // 添加一个相机，并绑定鼠标事件
         // var camera = new BABYLON.ArcRotateCamera("Camera", 2 * Math.PI / 3, Math.PI / 3, 2, new BABYLON.Vector3(0, 5, 10), scene);
-        this.camera = new BABYLON.UniversalCamera("UniversalCamera", new BABYLON.Vector3(-9, 15, 30), this.scene);
+        this.camera = new BABYLON.UniversalCamera("UniversalCamera", new BABYLON.Vector3(0, 15, 30), this.scene);
         //相机观察的目标，在这里表示：相机放在(0,0,-10)，镜头对准观察 (0,0,0)
         this.camera.setTarget(BABYLON.Vector3.Zero());
 
@@ -59,7 +59,7 @@ export default class GameCore {
         // 定义和应用重力和Cannon物理引擎，教學https://endoc.cnbabylon.com/how_to/using_the_physics_engine
         var gravityVector = new BABYLON.Vector3(0, -9.81, 0);
         // var physicsPlugin = new BABYLON.CannonJSPlugin();
-        var physicsPlugin = new BABYLON.AmmoJSPlugin;
+        var physicsPlugin = new BABYLON.AmmoJSPlugin();
         this.scene.enablePhysics(gravityVector, physicsPlugin);
     }
 

@@ -29,6 +29,7 @@
     "webpack-hot-middleware": "^2.25.0"
   },
   "dependencies": {
+    "ammo.js": "github:kripken/ammo.js#aab297a4164779c3a9d8dc8d9da26958de3cb778",
     "babylonjs-loaders": "^4.1.0"
   }
 }

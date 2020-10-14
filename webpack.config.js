@@ -4,7 +4,8 @@ const webpack = require("webpack");
 
 module.exports = { //webpack起始設定
     // entry: './src/index.ts',
-    context: __dirname + '/src',
+    // context: __dirname + '/src',
+    context: __dirname,
     entry: {
         app: path.resolve('./src/index.ts'), //入口文件
         // vendor: [
@@ -18,6 +19,9 @@ module.exports = { //webpack起始設定
         publicPath: '/src/'
     },
     mode: 'production',
+    node: {
+        fs: 'empty'
+    },
     module: {
         rules: [ //各類型檔案配置規則
             {

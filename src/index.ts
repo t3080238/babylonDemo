@@ -7,5 +7,4 @@ import GameCore from './core/gameCore'
 
 window.addEventListener('DOMContentLoaded', () => {
     let game = new GameCore();
-    // game.doRender();
 });

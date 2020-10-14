@@ -7,6 +7,7 @@ export default class Playground {
     constructor(game) {
         this.game = game;
         this.setObject();
+        this.setMouseEvent();
     }
 
     public update() {
@@ -24,7 +25,7 @@ export default class Playground {
 
     private setObject() {
         let a = 2 / 100;
-        let limitZ = 3;
+        let limitZ = 0;
 
         for (let i = 0; i < 20; i++) {
             let coin = BABYLON.MeshBuilder.CreateCylinder("cylinder", { diameter: 1.4, height: 0.2 }, this.game.scene);
@@ -40,22 +41,22 @@ export default class Playground {
         }
 
         setInterval(() => {
-            if (this.coinList.length >= 100) {
-                limitZ += 0.1;
-                return;
-            }
-            limitZ = 0;
-            // // 添加一个球体到场景中
-            let coin = BABYLON.MeshBuilder.CreateCylinder("cylinder", { diameter: 1.4, height: 0.2 }, this.game.scene);
-            let x = Math.random() * 8 - 4;
-            coin.position.set(x, 3, 1.5);
-            let ballMaterial = this.setMaterial( { diffuseColor: new BABYLON.Color3(1, 1, 0) });
-            coin.material = ballMaterial;
-            // 物理
-            coin.physicsImpostor = new BABYLON.PhysicsImpostor(coin, BABYLON.PhysicsImpostor.CylinderImpostor, { mass: 1, friction: 1, restitution: 0 }, this.game.scene);
+            // if (this.coinList.length >= 100) {
+            //     limitZ += 0.1;
+            //     return;
+            // }
+            // limitZ = 0;
+            // // // 添加一个球体到场景中
+            // let coin = BABYLON.MeshBuilder.CreateCylinder("cylinder", { diameter: 1.4, height: 0.2 }, this.game.scene);
+            // let x = Math.random() * 8 - 4;
+            // coin.position.set(x, 3, 1.5);
+            // let ballMaterial = this.setMaterial( { diffuseColor: new BABYLON.Color3(1, 1, 0) });
+            // coin.material = ballMaterial;
+            // // 物理
+            // coin.physicsImpostor = new BABYLON.PhysicsImpostor(coin, BABYLON.PhysicsImpostor.CylinderImpostor, { mass: 1, friction: 1, restitution: 0 }, this.game.scene);
 
-            this.coinList.push(coin);
-            // console.log(this.coinList.length);
+            // this.coinList.push(coin);
+
         }, 2000)
 
         // sphere.applyGravity = true;
@@ -144,10 +145,47 @@ export default class Playground {
         wallRight.position.set(-5, 0.5, 5);
         wallRight.rotation.set(0, -Math.PI / 2, 0);
         wallRight.physicsImpostor = new BABYLON.PhysicsImpostor(wallRight, BABYLON.PhysicsImpostor.BoxImpostor, { mass: 0 }, this.game.scene);
-        var wallMaterial = this.setMaterial( { diffuseColor: new BABYLON.Color3(1, 0, 1) });
+        var wallMaterial = this.setMaterial({ diffuseColor: new BABYLON.Color3(1, 0, 1) });
         wallTop.material = wallMaterial;
         wallLeft.material = wallMaterial;
         wallRight.material = wallMaterial;
+    }
+
+    private setMouseEvent() {
+        var mouseWall = BABYLON.MeshBuilder.CreatePlane("mouseWall", { width: 40, height: 40, sideOrientation: BABYLON.Mesh.DEFAULTSIDE }, this.game.scene)
+        mouseWall.material = this.setMaterial({ diffuseColor: new BABYLON.Color3(1, 1, 0) })
+        mouseWall.position.set(0, 0, 10);
+        mouseWall.rotation.set(0.5, Math.PI, 0);
+        mouseWall.material.alpha = 0;
+
+        // // 当点击事件被处罚时
+        // window.addEventListener("click", (event) => {
+        //     console.log(event);
+        //     // We try to pick an object
+        //     var pickResult = this.game.scene.pick(this.game.scene.pointerX, this.game.scene.pointerY);
+        //     console.log(pickResult);
+        // });
+
+        this.game.scene.onPointerDown = (evt, pickResult) => {
+            // if the click hits the ground object, we change the impact position
+            if (pickResult.hit) {
+                this.addCoin(pickResult.pickedPoint.x);
+            }
+        };
+
+    }
+
+    private addCoin(positionX) {
+        let coin = BABYLON.MeshBuilder.CreateCylinder("cylinder", { diameter: 1.4, height: 0.2 }, this.game.scene);
+        let x = positionX > 4 ? 4 : positionX;
+        x = x < -4 ? -4 : x;
+        coin.position.set(x, 3, 1.5);
+        let ballMaterial = this.setMaterial({ diffuseColor: new BABYLON.Color3(1, 1, 0) });
+        coin.material = ballMaterial;
+        // 物理
+        coin.physicsImpostor = new BABYLON.PhysicsImpostor(coin, BABYLON.PhysicsImpostor.CylinderImpostor, { mass: 1, friction: 1, restitution: 0 }, this.game.scene);
+
+        this.coinList.push(coin);
     }
 
     setMaterial(color) {
