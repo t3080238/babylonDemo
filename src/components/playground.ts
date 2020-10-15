@@ -3,19 +3,19 @@ import * as BABYLON from 'babylonjs'
 export default class Playground {
     private game: any;
     private coinList: any[] = [];
+    private adjustMass: number = 1;
+    private limitZ: number = 0;
 
     constructor(game) {
         this.game = game;
         this.setObject();
         this.setMouseEvent();
+        this.setKeyEvent();
+        this.setText();
     }
 
     public update() {
         this.coinList.forEach((coin, i) => {
-            if (coin.position.z > 9 && coin.physicsImpostor.mass === 1) {
-                // coin.physicsImpostor.setMass(100);
-            }
-
             if (coin.position.y < -10) {
                 coin.dispose();
                 this.coinList.splice(i, 1);
@@ -25,7 +25,7 @@ export default class Playground {
 
     private setObject() {
         let a = 2 / 100;
-        let limitZ = 0;
+        this.limitZ = 0;
 
         for (let i = 0; i < 20; i++) {
             let coin = BABYLON.MeshBuilder.CreateCylinder("cylinder", { diameter: 1.4, height: 0.2 }, this.game.scene);
@@ -48,7 +48,8 @@ export default class Playground {
             // limitZ = 0;
             // // // 添加一个球体到场景中
             // let coin = BABYLON.MeshBuilder.CreateCylinder("cylinder", { diameter: 1.4, height: 0.2 }, this.game.scene);
-            // let x = Math.random() * 8 - 4;
+            let x = Math.random() * 8 - 4;
+            this.addCoin(x);
             // coin.position.set(x, 3, 1.5);
             // let ballMaterial = this.setMaterial( { diffuseColor: new BABYLON.Color3(1, 1, 0) });
             // coin.material = ballMaterial;
@@ -57,7 +58,7 @@ export default class Playground {
 
             // this.coinList.push(coin);
 
-        }, 2000)
+        }, 5000)
 
         // sphere.applyGravity = true;
 
@@ -111,7 +112,7 @@ export default class Playground {
             if (pushBox.position.z < -3) {
                 a = 2 / 100;
             }
-            else if (pushBox.position.z > limitZ) {
+            else if (pushBox.position.z > this.limitZ) {
                 a = -2 / 100;
             }
 
@@ -152,7 +153,7 @@ export default class Playground {
     }
 
     private setMouseEvent() {
-        var mouseWall = BABYLON.MeshBuilder.CreatePlane("mouseWall", { width: 40, height: 40, sideOrientation: BABYLON.Mesh.DEFAULTSIDE }, this.game.scene)
+        let mouseWall = BABYLON.MeshBuilder.CreatePlane("mouseWall", { width: 40, height: 40, sideOrientation: BABYLON.Mesh.DEFAULTSIDE }, this.game.scene)
         mouseWall.material = this.setMaterial({ diffuseColor: new BABYLON.Color3(1, 1, 0) })
         mouseWall.position.set(0, 0, 10);
         mouseWall.rotation.set(0.5, Math.PI, 0);
@@ -172,6 +173,73 @@ export default class Playground {
                 this.addCoin(pickResult.pickedPoint.x);
             }
         };
+    }
+
+    private setKeyEvent() {
+        window.window.onkeyup = (event) => {
+            this.onKeyUp(event);
+        }
+    }
+
+    private onKeyUp(event) {
+        // console.log('onKeyUp', event.keyCode);
+        switch (event.keyCode) {
+            // 空白鍵
+            case 32:
+                break;
+            // 方向鍵上（同空白鍵）
+            case 38:
+                break;
+            // 左鍵
+            case 37:
+                break;
+            // 右鍵
+            case 39:
+                break;
+            // 方向鍵下（同Z鍵）
+            case 40:
+                break;
+            // Z鍵
+            case 90:
+                this.setMass(-5);
+                break;
+            // X鍵
+            case 88:
+                this.setMass(5);
+                break;
+            // A鍵
+            case 65:
+                this.setLimitZ(-0.5);
+                break;
+            // S鍵
+            case 83:
+                this.setLimitZ(0.5);
+                break;
+            default:
+                break;
+        }
+    }
+
+    private setMass(mass: number) {
+        this.adjustMass += mass;
+        this.adjustMass = this.adjustMass < 1 ? 1 : this.adjustMass;
+        console.log('adjustMass', this.adjustMass);
+
+        this.coinList.forEach((coin) => {
+            if (coin.position.z > 8.5) {
+                coin.physicsImpostor.setMass(this.adjustMass);
+                coin.material = this.setMaterial({ diffuseColor: new BABYLON.Color3(1, 0.8, 0.5) });
+            }
+        })
+    }
+
+    private setLimitZ(num: number) {
+        this.limitZ += num;
+        this.limitZ = this.limitZ < 0 ? 0 : this.limitZ;
+        this.limitZ = this.limitZ > 7 ? 7 : this.limitZ;
+        console.log('limitZ', this.limitZ);
+    }
+    private setText() {
 
     }
 
@@ -179,7 +247,7 @@ export default class Playground {
         let coin = BABYLON.MeshBuilder.CreateCylinder("cylinder", { diameter: 1.4, height: 0.2 }, this.game.scene);
         let x = positionX > 4 ? 4 : positionX;
         x = x < -4 ? -4 : x;
-        coin.position.set(x, 3, 1.5);
+        coin.position.set(x, 3, 2);
         let ballMaterial = this.setMaterial({ diffuseColor: new BABYLON.Color3(1, 1, 0) });
         coin.material = ballMaterial;
         // 物理
